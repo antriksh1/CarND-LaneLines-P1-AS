@@ -91,12 +91,21 @@ The pipeline consisted of 6 stages. However, the order of execution is critical 
 ## 2. Identify potential shortcomings with your current pipeline
 
 
-* Will not work if road at incline / lane markings outside of slopes defined
-* Also when road itself is gray/close to white
+* Will not work if road is at an incline or decline:
+    
+    Having a incline/decline street would mean that the lane markings would be outside of slope boundaries defined. Therefore, this approach would not work.
+    
+* Color of road itself gray, or close to white: 
 
+    In that case the road itself will be picked up as a lane, with a very faint distinction between the road and lane-markings. So the draw_lines() would do a polyfit() and the lanes would be calculated to be in the middle, which is incorrect.
 
 
 ## 3. Suggest possible improvements to your pipeline
 
-* Dynamic slope detection?
-* More ?
+* Dynamic slope boundaries:
+    
+    To avoid the first issue of incline/decline street, we could determine the bounding slopes using the horizon, and adjust the slopes that we want accordingly. A very high portion of the image above the horizon (empty at the top) would mean that we are at an decline, and therefore the slopes of the lanes would be less steep. Conversely, if very little portion of the image is above the horizon (empty at the top), that would signify an incline, and therefore slopes of the lane lines would be very steep.
+
+* Interpolation:
+
+    To avoid the second issue mentioned above, we could interpolate the lanes drawn within different video frames, instead of processing and displaying every single frame. In real-life, much will not change between frames. So, the lanes in the current frame should be similar to lanes in the previous frame. Managing this would eliminate jitter as well.
